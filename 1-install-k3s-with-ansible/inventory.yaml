@@ -9,7 +9,13 @@ k3s_cluster:
 
   # Required Vars
   vars:
+    # My vars
     k3s_install_state: install # install, upgrade, remove. If you dont want anything to happen, set empty or comment out.
+    firewalld_public_zone_ports_to_open:
+      - 6443/tcp
+      - 443/tcp
+
+    ## k3s-ansible related variables:
     k3s_version: v1.36.4+k3s1 # https://github.com/k3s-io/k3s/releases
 
     # The token should be a random string of reasonable length. You can generate

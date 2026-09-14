@@ -1,16 +1,33 @@
 ---
-- name: Load package variables
-  hosts: k3s_cluster
-  gather_facts: false
-
 - name: Import the K3s collection install playbook. This will handle firewalls/selinux, install k3s, and configure the cluster.
   ansible.builtin.import_playbook: k3s.orchestration.site
-  when: k3s_install_state | default('') | lower == 'install'
+  when: "k3s_install_state | default('') | lower == 'install'"
 
 - name: Import the K3s collection upgrade playbook
   ansible.builtin.import_playbook: k3s.orchestration.upgrade
-  when: k3s_install_state | default('') | lower == 'upgrade'
+  when: "k3s_install_state | default('') | lower == 'upgrade'"
 
 - name: Import the K3s collection remove playbook
   ansible.builtin.import_playbook: k3s.orchestration.reset
-  when: k3s_install_state | default('') | lower == 'remove'
+  when: "k3s_install_state | default('') | lower == 'remove'"
+
+- name: Allow Firewalld public zone ports to open
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Gather service facts for firewalld check
+      ansible.builtin.service_facts:
+
+    - name: If firewalld enabled, open configured TCP ports
+      become: true
+      when:
+        - ansible_facts.services['firewalld.service'] is defined
+        - ansible_facts.services['firewalld.service'].state == 'running'
+        - firewalld_public_zone_ports_to_open is defined
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        zone: public
+        permanent: true
+        immediate: true
+        state: enabled
+      loop: "{{ firewalld_public_zone_ports_to_open }}"
