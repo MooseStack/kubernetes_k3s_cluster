@@ -3,3 +3,5 @@
 ## Install k3s using Ansible
 
 - [1-install-k3s-with-ansible/README.md](1-install-k3s-with-ansible/README.md)
+   - Supports install of k3s, helm, and ArgoCD on destination.
+   - `pip3 install --user ansible`
