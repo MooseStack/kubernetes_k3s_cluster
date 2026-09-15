@@ -15,12 +15,19 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
 
 2. Update the inventory (variables and hosts info): [1-install-k3s-with-ansible/inventory.yaml](inventory.yaml)
 
+   Run `playbooks/helm.yaml` first to install the pinned Helm CLI on the target
+   server before running the Argo CD playbook.
+
    - Hosts must be members of `k3s_cluster` in either `server` or `agent`.
 
    | Variable | Value in inventory | Purpose |
    | --- | --- | --- |
    | `k3s_install_state` | `install` | Options: `install`, `upgrade`, or `remove`. |
    | `k3s_version` | `v1.36.4+k3s1` | K3s release to install / upgrade to. |
+   | `argocd_install_state` | `install` | Argo CD Helm action: `install` or `remove`. Will also install helm. Leave blank otherwise.|
+   | `argocd_chart_version` | `10.9.1` | Argo CD Helm chart version to install or upgrade to. |
+   | `helm_version` | `v3.17.3` | Helm CLI version to install on the cluster server before the Argo CD playbook runs. |
+   | `controller_kubeconfig` | `/etc/rancher/k3s/k3s.yaml` | Target Kubeconfig used to install ArgoCD |
    | `firewalld_public_zone_ports_to_open` | `6443/tcp`, `443/tcp` | Open ports to public zone if using firewalld |
    | `server.hosts` | `172.16.0.20` | The K3s server node for this cluster. |
    | `agent.hosts` | empty (`{}`) | Single-node cluster, so no agent hosts are configured. |
@@ -39,7 +46,21 @@ ansible-galaxy collection install -r requirements.yaml
 
 Run the playbook from this directory so Ansible automatically picks up the local `ansible.cfg`:
 
+## Install k3s, helm, and argocd:
 ```sh
 cd 1-install-k3s-with-ansible
 ansible-playbook playbooks/main.yaml
+```
+
+## Or individually:
+Install the Helm CLI:
+
+```sh
+ansible-playbook playbooks/helm.yaml
+```
+
+Install Argo CD with its Helm chart:
+
+```sh
+ansible-playbook playbooks/argocd.yaml
 ```

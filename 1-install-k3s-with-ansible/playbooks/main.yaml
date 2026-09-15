@@ -1,9 +1,10 @@
-### This is a wrapper playbook that imports the K3s collection playbooks for install, upgrade, and remove. 
+### 1- This is a partial wrapper playbook that imports the K3s collection playbooks for install, upgrade, and remove. 
 # You can define what to do in the inventory.yaml file with the k3s_install_state variable.
 
-### It also handles opening firewall public zone ports if firewalld is enabled on the hosts.
+### 2 - open firewalld public zone ports if firewalld is enabled on the hosts.
 # Tiy can define the ports to open in the inventory.yaml file with the firewalld_public_zone_ports_to_open variable.
 
+## 3 - install helm and argocd if set to install
 
 ---
 - name: Import the K3s collection install playbook. This will handle firewalls/selinux, install k3s, and configure the cluster.
@@ -20,3 +21,11 @@
 
 - name: Import the firewalld playbook
   ansible.builtin.import_playbook: firewalld.yaml
+
+- name: Import the Helm installation playbook when Argo CD is being installed
+  ansible.builtin.import_playbook: helm.yaml
+  when: "argocd_install_state | default('') | lower == 'install'"
+
+- name: Import the Argo CD playbook when Argo CD is being installed or removed
+  ansible.builtin.import_playbook: argocd.yaml
+  when: "argocd_install_state | default('') | lower in ['install', 'remove']"

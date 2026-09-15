@@ -11,9 +11,16 @@ k3s_cluster:
   vars:
     # My vars
     k3s_install_state: install # install, upgrade, remove. If you dont want anything to happen, set empty or comment out.
+    argocd_install_state: install # install or remove. Leave empty if you dont want anything to happen.
+
     firewalld_public_zone_ports_to_open:
       - 6443/tcp
       - 443/tcp
+
+    argocd_chart_version: 10.9.1
+    helm_version: v3.22.0 # Will only install helm on first host in Server group. And only if argocd is install state.
+    controller_kubeconfig: /etc/rancher/k3s/k3s.yaml
+
 
     ## k3s-ansible related variables.
     ## Referenced from upstream collection:
