@@ -31,13 +31,15 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
 3. (optional) - already installed in this repo, but if you want to update and reinstall the `k3s-ansible` collection:
 
 ```sh
-ansible-galaxy collection install -r 1-install-k3s-with-ansible/requirements.yaml
+cd 1-install-k3s-with-ansible
+ansible-galaxy collection install -r requirements.yaml
 ```
 
 ## Run
 
-Run the playbook:
+Run the playbook from this directory so Ansible automatically picks up the local `ansible.cfg`:
 
 ```sh
-ansible-playbook 1-install-k3s-with-ansible/playbooks/main.yaml
+cd 1-install-k3s-with-ansible
+ansible-playbook playbooks/main.yaml
 ```
