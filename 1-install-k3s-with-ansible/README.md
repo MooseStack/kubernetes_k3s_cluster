@@ -25,6 +25,7 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
    | `k3s_install_state` | `install` | Options: `install`, `upgrade`, or `remove`. |
    | `k3s_version` | `v1.36.4+k3s1` | K3s release to install / upgrade to. |
    | `argocd_install_state` | `install` | Argo CD Helm action: `install` or `remove`. Will also install helm. Leave blank otherwise.|
+   | `argo_bootstrap` | `false` | Apply the manifests in `2-argo_bootstrap` after the Argo CD installation. |
    | `argocd_chart_version` | `10.9.1` | Argo CD Helm chart version to install or upgrade to. |
    | `helm_version` | `v3.17.3` | Helm CLI version to install on the cluster server before the Argo CD playbook runs. |
    | `controller_kubeconfig` | `/etc/rancher/k3s/k3s.yaml` | Target Kubeconfig used to install ArgoCD |
@@ -63,4 +64,10 @@ Install Argo CD with its Helm chart:
 
 ```sh
 ansible-playbook playbooks/argocd.yaml
+```
+
+Apply the Argo CD bootstrap manifests:
+
+```sh
+ansible-playbook playbooks/argo-bootstrap.yaml -e argo_bootstrap=true
 ```

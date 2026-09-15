@@ -12,6 +12,7 @@ k3s_cluster:
     # My vars
     k3s_install_state: install # install, upgrade, remove. If you dont want anything to happen, set empty or comment out.
     argocd_install_state: install # install or remove. Leave empty if you dont want anything to happen.
+    argo_bootstrap: true # Apply the manifests in 2-argo_bootstrap after Argo CD is installed.
 
     firewalld_public_zone_ports_to_open:
       - 6443/tcp

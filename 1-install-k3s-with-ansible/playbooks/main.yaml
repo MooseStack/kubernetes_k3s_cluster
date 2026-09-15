@@ -29,3 +29,7 @@
 - name: Import the Argo CD playbook when Argo CD is being installed or removed
   ansible.builtin.import_playbook: argocd.yaml
   when: "argocd_install_state | default('') | lower in ['install', 'remove']"
+
+- name: Import the Argo CD bootstrap playbook when enabled
+  ansible.builtin.import_playbook: argo-bootstrap.yaml
+  when: argo_bootstrap | default(false) | bool

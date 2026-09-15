@@ -1,0 +1,56 @@
+projects:
+  - name: app-of-apps
+    description: Argo CD project for app-of-apps pattern
+    sourceRepos:
+      - https://github.com/MooseStack/kubernetes_k3s_cluster.git
+    destinations:
+      - namespace: "*"
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: "*"
+
+  - name: immich
+    description: Argo CD project for Immich applications
+    sourceRepos:
+      - "*"
+    destinations:
+      - namespace: immich
+        server: https://kubernetes.default.svc
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+
+  - name: pgvector
+    description: Argo CD project for pgvector applications
+    sourceRepos:
+      - "*"
+    destinations:
+      - namespace: pgvector
+        server: https://kubernetes.default.svc
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+
+  - name: tailscale
+    description: Argo CD project for tailscale
+    sourceRepos:
+      - https://github.com/MooseStack/tailscale_helm.git
+    destinations:
+      - namespace: tailscale
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: Namespace
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+
+repositories:
+  - name: app-of-apps
+    project: app-of-apps
+    url: https://github.com/MooseStack/kubernetes_k3s_cluster.git
+
+  - name: tailscale
+    project: tailscale
+    url: https://github.com/MooseStack/tailscale_helm.git

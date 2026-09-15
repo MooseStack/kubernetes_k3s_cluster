@@ -1,0 +1,17 @@
+{{- range .Values.repositories }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argo-gitrepo-{{ .name }}
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+  annotations:
+    managed-by: argocd.argoproj.io
+stringData:
+  project: {{ .project }}
+  type: git
+  url: {{ .url }}
+type: Opaque
+---
+{{- end }}

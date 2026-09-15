@@ -1,0 +1,41 @@
+# Parent/Root argocd Application for the App of Apps pattern:
+# https://argo-cd.readthedocs.io/en/latest/operator-manual/cluster-bootstrapping/#app-of-apps-pattern
+# This application deploys/manages all other applications defined in the gitops/app-of-apps directory.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  namespace: argocd
+  finalizers:
+    # This allows ArgoCD to clean up(delete) child applications when this app is deleted.
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: app-of-apps
+  source:
+    repoURL: https://github.com/MooseStack/kubernetes_k3s_cluster.git
+    targetRevision: main
+    path: gitops/app-of-apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    managedNamespaceMetadata:
+      labels:
+        app.kubernetes.io/managed-by: argocd
+        argocd.argoproj.io/managed-by: argocd
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: "*"
+      kind: "Application"
+      jsonPointers:
+        # Allow manually disabling auto sync for apps, useful for debugging.
+        - /spec/syncPolicy/automated
+        # These are automatically updated on a regular basis. Not ignoring last applied configuration since it's used for computing diffs after normalization.
+        - /metadata/annotations/argocd.argoproj.io~1refresh
+        - /operation

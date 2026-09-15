@@ -1,0 +1,10 @@
+apiVersion: v2
+name: cert-manager
+description: Install cert-manager and the cluster issuer used by the cluster
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: cert-manager
+    version: v1.21.2
+    repository: https://charts.jetstack.io

@@ -1,0 +1,15 @@
+---
+- name: Bootstrap Argo CD GitOps resources
+  hosts: "{{ groups['server'][0] }}"
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Apply Argo CD bootstrap manifests
+      kubernetes.core.k8s:
+        kubeconfig: "{{ controller_kubeconfig }}"
+        state: present
+        src: "{{ item }}"
+      loop: "{{ query('ansible.builtin.fileglob', playbook_dir + '/../../2-argo_bootstrap/*.yaml') }}"
+      loop_control:
+        label: "{{ item | basename }}"
