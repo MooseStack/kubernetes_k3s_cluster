@@ -10,8 +10,10 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
   saved to `~/.kube/config.new`.
 
 ## Prerequisites
+ 
+1. Ensure you have ansible installed: `pip3 install --user ansible` with passwordless ssh to your targets.
 
-1. Update the inventory (variables and hosts info): [1-install-k3s-with-ansible/inventory.yaml](inventory.yaml)
+2. Update the inventory (variables and hosts info): [1-install-k3s-with-ansible/inventory.yaml](inventory.yaml)
 
    - Hosts must be members of `k3s_cluster` in either `server` or `agent`.
 
@@ -26,7 +28,7 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
    | `ansible_user` | `ansible` | SSH user used by Ansible, needs to have passwordless root access. |
    | `ansible_ssh_private_key_file` | `~/.ssh/ansible` | Private key used to authenticate to the hosts. |
 
-2. (optional) - already installed in this repo, but if you want to update and reinstall the `k3s-ansible` collection:
+3. (optional) - already installed in this repo, but if you want to update and reinstall the `k3s-ansible` collection:
 
 ```sh
 ansible-galaxy collection install -r 1-install-k3s-with-ansible/requirements.yaml
@@ -37,5 +39,5 @@ ansible-galaxy collection install -r 1-install-k3s-with-ansible/requirements.yam
 Run the playbook:
 
 ```sh
-ansible-playbook 1-install-k3s-with-ansible/playbook.yaml
+ansible-playbook 1-install-k3s-with-ansible/playbooks/main.yaml
 ```
