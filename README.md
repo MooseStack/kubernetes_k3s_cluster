@@ -27,16 +27,20 @@ This creates:
 
 - The `gitops-infra` Argo CD project.
 - The `gitops-infra` namespace and repository connection.
-- An ApplicationSet that manages the kubernetes compatible Argo CD resources in
-  `gitops/infra/argocd` and infrastructure components in
+- An infrastructure ApplicationSet that manages the Kubernetes-compatible Argo
+  CD resources in `gitops/infra/argocd` and infrastructure components in
   `gitops/infra/components`.
-- An app-of-apps Application that manages definitions in
-  `gitops/app-of-apps`.
+- An `apps` ApplicationSet that manages namespace-scoped applications.
+
+This repository uses two ApplicationSets in total: one for infrastructure and one
+for namespace-scoped applications.
 
 Argo CD watches the active k3s resources and applies changes automatically with
 prune and self-heal enabled. Add Argo CD projects, repository connections, and
-Applications under `gitops/infra/argocd`; add application definitions under
-`gitops/app-of-apps`.
+Applications under `gitops/infra/argocd`. Add one `app.yaml` under
+`gitops/apps/<name>` for each namespace-scoped application. The `source` in
+that file can target a local Helm/Kustomize directory, an external Git
+repository, or an OCI/registry artifact.
 
 Infrastructure components live under `gitops/infra/components`. Each component
 is discovered as an Argo CD Application and may use Helm, Kustomize, or plain

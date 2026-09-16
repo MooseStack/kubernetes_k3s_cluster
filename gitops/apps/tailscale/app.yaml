@@ -1,0 +1,20 @@
+sources:
+  - repoURL: https://github.com/MooseStack/tailscale_helm.git
+    targetRevision: main
+    path: tailscale
+    helm:
+      valueFiles:
+        - values.yaml # tailscale_helm values file
+        - $values/gitops/apps/tailscale/values.yaml # custom values file here, takes precedence since its last on list
+    # Syntax to reference this 2nd repo source (using $values key)
+  - repoURL: https://github.com/MooseStack/kubernetes_k3s_cluster.git
+    targetRevision: main
+    ref: values
+
+ignoreDifferences:
+  - group: ""
+    kind: Secret
+    name: tailscale-secret
+    jsonPointers:
+      - /data
+      - /stringData
