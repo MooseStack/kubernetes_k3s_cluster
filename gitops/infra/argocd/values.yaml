@@ -11,6 +11,9 @@ projects:
     namespaceResourceWhitelist:
       - group: "*"
         kind: "*"
+    clusterResourceWhitelist:
+      - group: ""
+        kind: Namespace
 
 repositories:
   - name: kubernetesk3scluster
