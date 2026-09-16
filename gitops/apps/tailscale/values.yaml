@@ -1,1 +1,8 @@
 # Tailscale Helm values managed by this repository.
+
+image:
+  repository: docker.io/tailscale/tailscale
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v1.102"
