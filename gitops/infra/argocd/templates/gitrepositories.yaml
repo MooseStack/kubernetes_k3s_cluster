@@ -9,7 +9,9 @@ metadata:
   annotations:
     managed-by: argocd.argoproj.io
 stringData:
-  project: {{ .project }}
+{{ with .project }}
+  project: {{ . }}
+{{ end }}
   type: git
   url: {{ .url }}
 type: Opaque

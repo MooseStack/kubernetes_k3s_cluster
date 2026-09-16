@@ -16,8 +16,14 @@ Projects use the following fields:
 - optional `clusterResourceWhitelist`
 - optional `namespaceResourceWhitelist`
 
-Repositories use `name`, `project`, and `url`. The chart creates the repository
-Secret as `argo-gitrepo-<name>`.
+Repositories use `name` and `url`, with an optional `project`. Omitting
+`project` makes the repository Secret available to every Argo CD project;
+specifying it limits the Secret to that project. The chart creates the
+repository Secret as `argo-gitrepo-<name>`.
+
+The repository still must be listed in each consuming AppProject's
+`sourceRepos`. A credential template is only needed when credentials should be
+shared by multiple repository Secrets; public repositories do not need one.
 
 The `apps` project is used by the `apps` ApplicationSet in
 [`templates/apps-applicationSet.yaml`](./templates/apps-applicationSet.yaml).
