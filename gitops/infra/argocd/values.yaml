@@ -1,3 +1,25 @@
+argocd:
+  # Values for the upstream argo-cd Helm chart.
+  configs:
+    params:
+      # Keep TLS enabled on the Argo CD API server.
+      server.insecure: false
+
+  server:
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      path: /
+      hostname: argocd.homelab
+      annotations:
+        cert-manager.io/cluster-issuer: selfsigned
+      labels: {}
+      tls: false
+      extraTls:
+        - secretName: argocd-tls
+          hosts:
+            - argocd.homelab
+
 projects:
   - name: gitops-apps
     description: Argo CD project for applications managed under gitops/apps

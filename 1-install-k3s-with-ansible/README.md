@@ -61,13 +61,14 @@ Install the Helm CLI:
 ansible-playbook playbooks/helm.yaml
 ```
 
-Install Argo CD with its Helm chart:
+Install ArgoCD. Theres a check I put that will ensure it doesnt reinstall if its already installed. To avoid GitOps overwrite in future Ansible reruns.
 
 ```sh
 ansible-playbook playbooks/argocd.yaml
 ```
 
-Apply the Argo CD bootstrap manifests:
+
+Apply the Argo CD bootstrap manifests, this enabled the GitOps approach to maintain ArgoCD upgrades and all future Kubernetes manifests via the [gitops](../gitops) folder:
 
 ```sh
 ansible-playbook playbooks/argo-bootstrap.yaml -e argo_bootstrap=true

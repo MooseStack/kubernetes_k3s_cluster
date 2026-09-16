@@ -23,8 +23,25 @@
         state: absent
       when: argocd_install_state | lower == 'remove'
 
-    - name: Install and configure Argo CD
+    - name: Check whether Argo CD is already installed to avoid overwriting gitops
+      ansible.builtin.command:
+        argv:
+          - helm
+          - --kubeconfig
+          - "{{ controller_kubeconfig }}"
+          - status
+          - argocd
+          - --namespace
+          - argocd
+      register: argocd_release_status
+      changed_when: false
+      failed_when: false
       when: argocd_install_state | lower == 'install'
+
+    - name: Install and configure Argo CD
+      when:
+        - argocd_install_state | lower == 'install'
+        - argocd_release_status.rc != 0
       block:
         - name: Install Argo CD
           kubernetes.core.helm:
@@ -54,38 +71,41 @@
               - argocd
               - --timeout=600s
 
-        # ==========================================================
-        # Get Argo CD credentials
-        # ==========================================================
+    # ==========================================================
+    # Get Argo CD credentials
+    # ==========================================================
 
-        - name: Read Argo CD admin secret
-          ansible.builtin.command:
-            argv:
-              - kubectl
-              - --kubeconfig
-              - "{{ controller_kubeconfig }}"
-              - get
-              - secret
-              - argocd-initial-admin-secret
-              - --namespace
-              - argocd
-              - --output=jsonpath={.data.password}
-          register: argocd_secret
-          no_log: true
+    - name: Read Argo CD admin secret
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - --kubeconfig
+          - "{{ controller_kubeconfig }}"
+          - get
+          - secret
+          - argocd-initial-admin-secret
+          - --namespace
+          - argocd
+          - --output=jsonpath={.data.password}
+      register: argocd_secret
+      no_log: true
+      when: argocd_install_state | lower == 'install'
 
-        - name: Decode Argo CD password
-          ansible.builtin.set_fact:
-            argocd_password: >-
-              {{
-                argocd_secret.stdout
-                | b64decode
-              }}
-          no_log: true
+    - name: Decode Argo CD password
+      ansible.builtin.set_fact:
+        argocd_password: >-
+          {{
+            argocd_secret.stdout
+            | b64decode
+          }}
+      no_log: true
+      when: argocd_install_state | lower == 'install'
 
-        - name: Display Argo CD UI port-forward command
-          ansible.builtin.debug:
-            msg: |
-              "Run 'kubectl --kubeconfig <your-KUBECONFIG> port-forward --namespace argocd service/argocd-server 8443:443'"
-              "On local browser. access Argo CD UI at https://localhost:8443"
-              "The ArgoCD initial credentials is:"
-              "Username: 'admin' , and password: '{{ argocd_password }}'"
+    - name: Display Argo CD UI port-forward command
+      ansible.builtin.debug:
+        msg: |
+          "Run 'kubectl --kubeconfig <your-KUBECONFIG> port-forward --namespace argocd service/argocd-server 8443:443'"
+          "On local browser. access Argo CD UI at https://localhost:8443"
+          "The ArgoCD initial credentials is:"
+          "Username: 'admin' , and password: '{{ argocd_password }}'"
+      when: argocd_install_state | lower == 'install'

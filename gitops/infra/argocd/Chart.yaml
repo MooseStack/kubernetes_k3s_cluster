@@ -1,5 +1,12 @@
 apiVersion: v2
 name: argocd-infrastructure
-description: Argo CD projects, repository connections, and bootstrap application
+description: Argo CD installation, projects, repository connections, and bootstrap application
 type: application
 version: 0.1.0
+
+## Sub Chart to take over the installation/maintenance of ArgoCD. This allows us to not need Ansible after initial install.
+dependencies:
+  - name: argo-cd
+    version: 10.9.1
+    repository: https://argoproj.github.io/argo-helm
+    alias: argocd
