@@ -1,0 +1,15 @@
+headlamp:
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      cert-manager.io/cluster-issuer: selfsigned
+    hosts:
+      - host: headlamp.homelab
+        paths:
+          - path: /
+            type: Prefix
+    tls:
+      - secretName: headlamp-tls
+        hosts:
+          - headlamp.homelab
