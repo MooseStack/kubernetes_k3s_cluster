@@ -64,7 +64,7 @@ ansible-playbook playbooks/helm.yaml
 Install ArgoCD. Theres a check I put that will ensure it doesnt reinstall if its already installed. To avoid GitOps overwrite in future Ansible reruns.
 
 ```sh
-ansible-playbook playbooks/argocd.yaml
+ansible-playbook playbooks/argocd.yaml -e argocd_install_state=install
 ```
 
 
