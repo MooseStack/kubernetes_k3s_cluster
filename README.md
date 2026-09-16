@@ -1,47 +1,16 @@
 # kubernetes_k3s_cluster
 
-## Install k3s using Ansible
+Installation and configuration of k3s, Helm, and ArgoCD using Ansible and GitOps.
+
+## Requirements
+- `x86-64` or `ARM`/`aarch64` architectures
+- Tested Operating Systems: Fedora/RHEL family distros (AlmaLinux, Rocky, Oracle Linux, CentOS Stream, etc.). Although, should work on Debian/Ubuntu family distros as well, just havent tested there yet.
+- `ansible`, can install using `pip3 install --user ansible`
+
+## Install and configuration using Ansible
 
 - [1-install-k3s-with-ansible/README.md](1-install-k3s-with-ansible/README.md)
-  - Supports installation of k3s, Helm, and Argo CD on the destination.
-  - `pip3 install --user ansible`
-
-## Manage the cluster with GitOps (Argo CD)
-
-After Argo CD is installed, bootstrap the GitOps resources from this repository
-with the Ansible playbook by setting `argo_bootstrap: true` in
-`1-install-k3s-with-ansible/inventory.yaml`:
-
-```sh
-cd 1-install-k3s-with-ansible
-ansible-playbook playbooks/main.yaml
-```
-
-Alternatively, apply the manifests directly:
-
-```sh
-kubectl --kubeconfig <your-KUBECONFIG> apply -f 2-argo_bootstrap
-```
-
-This creates:
-
-- The `gitops-infra` Argo CD project.
-- The `gitops-infra` namespace and repository connection.
-- An infrastructure ApplicationSet that manages the Kubernetes-compatible Argo
-  CD resources in `gitops/infra/argocd` and infrastructure components in
-  `gitops/infra/components`.
-- An `apps` ApplicationSet that manages namespace-scoped applications.
-
-This repository uses two ApplicationSets in total: one for infrastructure and one
-for namespace-scoped applications.
-
-Argo CD watches the active k3s resources and applies changes automatically with
-prune and self-heal enabled. Add Argo CD projects, repository connections, and
-Applications under `gitops/infra/argocd`. Add one `app.yaml` under
-`gitops/apps/<name>` for each namespace-scoped application. The `source` in
-that file can target a local Helm/Kustomize directory, an external Git
-repository, or an OCI/registry artifact.
-
-Infrastructure components live under `gitops/infra/components`. Each component
-is discovered as an Argo CD Application and may use Helm, Kustomize, or plain
-Kubernetes manifests.
+  - Inventory and variables: [inventory.yaml](1-install-k3s-with-ansible/inventory.yaml)
+    - if `argo_bootstrap: true`, it will:
+       - Create the gitops-infra related manifests and applicationSet defined in: [2-argo_bootstrap](2-argo_bootstrap)
+       - GitOps will be enabled, with ArgoCD syncing with the [gitops](gitops) folder
