@@ -3,7 +3,7 @@ argocd:
   configs:
     params:
       # Keep TLS enabled on the Argo CD API server.
-      server.insecure: false
+      server.insecure: true # will use cert
 
   server:
     ingress:
@@ -13,6 +13,7 @@ argocd:
       hostname: argocd.homelab
       annotations:
         cert-manager.io/cluster-issuer: selfsigned
+        cert-manager.io/common-name: "argocd.homelab"
       labels: {}
       tls: false
       extraTls:
