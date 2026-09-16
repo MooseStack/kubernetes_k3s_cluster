@@ -3,11 +3,12 @@
 This directory contains a local Ansible setup for installing, upgrading, or
 removing a K3s cluster using the upstream collection: [k3s-ansible](https://github.com/k3s-io/k3s-ansible)
 
-- The playbook will configure host-level requirements such as firewall rules,
+- The upstream k3s-ansible playbook will configure host-level requirements such as firewall rules,
   SELinux policies, and port forwarding as required k3s.
 - The kubeconfig is written to the remote host at `~/.kube/config` for the
   configured `ansible_user`, and the local ansible execution user also receives a copy
   saved to `~/.kube/config.new`.
+- Additionally, I created my own playbooks to work with firewalld, install ArgoCD and helm, and configure/bootstrap Argo for GitOps
 
 ## Prerequisites
  
