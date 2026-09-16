@@ -20,7 +20,9 @@ spec:
   # Template for generated ArgoCD Applications
   template:
     metadata:
-      name: "gitops-infra-{{.path.basename}}"
+      # Keep the self-managed Argo CD release aligned with the initial Ansible
+      # release. Other infrastructure applications retain their prefixed names.
+      name: '{{ if eq .path.basename "argocd" }}argocd{{ else }}gitops-infra-{{ .path.basename }}{{ end }}'
 
     spec:
       project: "gitops-infra"

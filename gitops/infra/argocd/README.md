@@ -11,3 +11,6 @@ This Helm chart takes over the install from Ansible of ArgoCD, and manages the f
 4. Upstream Argo CD chart settings are maintained under the `argocd` key in
 [values.yaml](values.yaml). The upstream dependency version and repository are pinned in
 [Chart.yaml](Chart.yaml).
+
+The generated Argo CD application is intentionally named `argocd` so its Helm
+release and resource names remain compatible with the initial Ansible install.
