@@ -14,3 +14,4 @@ Installation and configuration of k3s, Helm, and ArgoCD using Ansible and GitOps
     - if `argo_bootstrap: true`, it will:
        - Create the gitops-infra related manifests and applicationSet defined in: [2-argo_bootstrap](2-argo_bootstrap)
        - GitOps will be enabled, with ArgoCD syncing with the [gitops](gitops) folder
+       - ArgoCD will manage itself via GitOps by taking ownership of the initial boostrap via [Chart.yaml](gitops/infra/argocd/Chart.yaml) & [values.yaml](gitops/infra/argocd/values.yaml). Reference: [README.md](gitops/infra/argocd/README.md)
