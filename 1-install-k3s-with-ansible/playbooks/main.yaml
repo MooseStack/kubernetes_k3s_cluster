@@ -19,12 +19,13 @@
   ansible.builtin.import_playbook: k3s.orchestration.reset
   when: "k3s_install_state | default('') | lower == 'remove'"
 
-- name: Import the firewalld playbook
+- name: Import the firewalld playbook when k3s is installed
   ansible.builtin.import_playbook: firewalld.yaml
+  when: "k3s_install_state | default('') | lower == 'install'"
 
-- name: Import the Helm installation playbook when Argo CD is being installed
+- name: Import the Helm installation playbook
   ansible.builtin.import_playbook: helm.yaml
-  when: "argocd_install_state | default('') | lower == 'install'"
+  when: "argocd_install_state | default('') | lower in ['install', 'remove']"
 
 - name: Import the Argo CD playbook when Argo CD is being installed or removed
   ansible.builtin.import_playbook: argocd.yaml
@@ -32,4 +33,6 @@
 
 - name: Import the Argo CD bootstrap playbook when enabled
   ansible.builtin.import_playbook: argo-bootstrap.yaml
-  when: argo_bootstrap | default(false) | bool
+  when: 
+    - argo_bootstrap | default(false) | bool
+    - "argocd_install_state | default('') | lower in ['install']"

@@ -11,6 +11,23 @@
           - argocd_install_state | lower in ['install', 'remove']
         fail_msg: "argocd_install_state must be install or remove"
 
+    - name: Check whether the k3s CLI exists before removing Argo CD
+      ansible.builtin.command:
+        argv:
+          - k3s
+          - --version
+      register: k3s_cli_status
+      changed_when: false
+      failed_when: false
+      when: argocd_install_state | lower == 'remove'
+
+    - name: Skip Argo CD removal when the k3s CLI is not installed
+      ansible.builtin.debug:
+        msg: "Skipping Argo CD removal because the k3s CLI is not installed"
+      when:
+        - argocd_install_state | lower == 'remove'
+        - k3s_cli_status.rc | default(1) != 0
+
     - name: Remove Argo CD if state is remove
       kubernetes.core.helm:
         name: argocd
@@ -20,6 +37,14 @@
         kubeconfig: "{{ controller_kubeconfig }}"
         release_namespace: argocd
         create_namespace: false
+        state: absent
+      when:
+        - argocd_install_state | lower == 'remove'
+        - k3s_cli_status.rc | default(1) == 0
+
+    - name: Remove Helm if Argo CD state is remove
+      ansible.builtin.file:
+        path: /usr/local/bin/helm
         state: absent
       when: argocd_install_state | lower == 'remove'
 

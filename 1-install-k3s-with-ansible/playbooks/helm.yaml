@@ -9,12 +9,11 @@
       x86_64: amd64
       aarch64: arm64
       armv7l: arm
-    helm_install_dir: /usr/local/bin
 
   tasks:
     - name: Check installed Helm version
       ansible.builtin.command:
-        cmd: "{{ helm_install_dir }}/helm version --template={{ '{{' }}.Version{{ '}}' }}"
+        cmd: "/usr/local/bin/helm version --template={{ '{{' }}.Version{{ '}}' }}"
       register: installed_helm_version
       changed_when: false
       failed_when: false
@@ -58,7 +57,7 @@
         - name: Install Helm executable
           ansible.builtin.copy:
             src: "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}/linux-{{ helm_architectures[ansible_facts['architecture']] }}/helm"
-            dest: "{{ helm_install_dir }}/helm"
+            dest: "/usr/local/bin/helm"
             remote_src: true
             mode: "0755"
 
