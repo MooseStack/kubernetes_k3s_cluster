@@ -21,6 +21,19 @@ argocd:
             - argocd.homelab
 
 projects:
+  - name: gitops-infra
+    description: gitops-infra ArgoCD project to manage git folder - gitops/infra
+    sourceRepos:
+      - https://github.com/MooseStack/kubernetes_k3s_cluster.git
+    destinations:
+      - namespace: "*"
+        server: https://kubernetes.default.svc
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: "*"
   - name: gitops-apps
     description: Argo CD project for applications managed under gitops/apps
     sourceRepos:
@@ -65,7 +78,8 @@ projects:
   #       kind: "*"
 
 repositories:
-  - name: kubernetesk3scluster
+  - name: repo-1406131573
+    project: gitops-infra
     url: https://github.com/MooseStack/kubernetes_k3s_cluster.git
     
   - name: tailscalehelm

@@ -1,0 +1,70 @@
+# This is the same/initial file as - 2-argo_bootstrap/4-applicationSet.yaml
+# Creating here to have ArgoCD/GitOps enablement of it.
+# If you modify this file, ensure you also modify the one used by Ansible
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: gitops-infra-applicationset
+  namespace: argocd
+
+spec:
+  goTemplate: true
+
+  # Generator: create the Argo CD Application for the active k3s infrastructure.
+  generators:
+    - git:
+        repoURL: "https://github.com/MooseStack/kubernetes_k3s_cluster.git"
+        revision: main
+        directories:
+          - path: "gitops/infra/argocd"
+          - path: "gitops/infra/clusterwide"
+          - path: "gitops/infra/components/*"
+
+  # Template for generated ArgoCD Applications
+  template:
+    metadata:
+      # Keep the self-managed Argo CD release aligned with the initial Ansible
+      # release. Other infrastructure applications retain their prefixed names.
+      name: '{{ if eq .path.basename "argocd" }}argocd{{ else }}gitops-infra-{{ .path.basename }}{{ end }}'
+
+    spec:
+      project: "gitops-infra"
+
+      source:
+        repoURL: "https://github.com/MooseStack/kubernetes_k3s_cluster.git"
+        targetRevision: HEAD
+        path: "{{.path.path}}"
+
+      destination:
+        server: "https://kubernetes.default.svc"
+        # Clusterwide resources use the existing default namespace; other
+        # components use the namespace matching their directory.
+        namespace: >-
+          {{- if eq .path.basename "clusterwide" -}}
+          default
+          {{- else -}}
+          {{ .path.basename }}
+          {{- end -}}
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+
+        managedNamespaceMetadata:
+          labels:
+            app.kubernetes.io/managed-by: argocd
+            argocd.argoproj.io/managed-by: argocd
+
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply=true
+
+        retry:
+          limit: 2
+
+  # Ignore the automated field to allow manual disabling
+  ignoreApplicationDifferences:
+    - jsonPointers:
+        - /spec/syncPolicy/automated
