@@ -82,6 +82,9 @@ projects:
       - group: ""
         kind: Namespace
         name: "immich"
+      - group: ""
+        kind: PersistentVolume
+        name: "immich-nfs"
     namespaceResourceWhitelist:
       - group: "*"
         kind: "*"
