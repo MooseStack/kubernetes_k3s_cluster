@@ -1,6 +1,6 @@
-# This is the same/initial file as - 2-argo_bootstrap/4-applicationSet.yaml
+# This is the similar to the initial file as - 2-argo_bootstrap/4-applicationSet.yaml
 # Creating here to have ArgoCD/GitOps enablement of it.
-# If you modify this file, ensure you also modify the one used by Ansible
+# If you modify this file, ensure you also modify the one used by Ansible. Main difference is helm rendering, so with this, I added escape characters.
 
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
@@ -26,7 +26,7 @@ spec:
     metadata:
       # Keep the self-managed Argo CD release aligned with the initial Ansible
       # release. Other infrastructure applications retain their prefixed names.
-      name: '{{ if eq .path.basename "argocd" }}argocd{{ else }}gitops-infra-{{ .path.basename }}{{ end }}'
+      name: '{{ "{{ if eq .path.basename \"argocd\" }}argocd{{ else }}gitops-infra-{{ .path.basename }}{{ end }}" }}'
 
     spec:
       project: "gitops-infra"
@@ -34,18 +34,13 @@ spec:
       source:
         repoURL: "https://github.com/MooseStack/kubernetes_k3s_cluster.git"
         targetRevision: HEAD
-        path: "{{.path.path}}"
+        path: '{{ "{{.path.path}}" }}'
 
       destination:
         server: "https://kubernetes.default.svc"
         # Clusterwide resources use the existing default namespace; other
         # components use the namespace matching their directory.
-        namespace: >-
-          {{- if eq .path.basename "clusterwide" -}}
-          default
-          {{- else -}}
-          {{ .path.basename }}
-          {{- end -}}
+        namespace: '{{ "{{ if eq .path.basename \"clusterwide\" }}default{{ else }}{{ .path.basename }}{{ end }}" }}'
 
       syncPolicy:
         automated:
