@@ -35,7 +35,7 @@ valkey:
 immich:
   persistence:
     library:
-      existingClaim: immich-library-pvc
+      existingClaim: immich-library
 
 server:
   ingress:
