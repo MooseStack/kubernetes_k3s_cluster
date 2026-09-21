@@ -9,6 +9,7 @@ spec:
   nfs:
     server: 172.16.0.9
     path: /volume1/immich
+  storageClassName: immich-nfs
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
@@ -27,4 +28,5 @@ spec:
     requests:
       storage: 300Gi
   volumeName: immich-nfs
+  storageClassName: immich-nfs
   volumeMode: Filesystem
