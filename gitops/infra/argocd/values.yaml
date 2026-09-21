@@ -35,7 +35,7 @@ projects:
       - group: "*"
         kind: "*"
   - name: gitops-apps
-    description: Argo CD project for applications managed under gitops/apps
+    description: Argo CD project for gitops/apps/projectName that dont specify a project
     sourceRepos:
       - https://github.com/MooseStack/kubernetes_k3s_cluster.git
     destinations:
@@ -55,27 +55,42 @@ projects:
     destinations:
       - namespace: tailscale
         server: https://kubernetes.default.svc
-    namespaceResourceWhitelist:
-      - group: "*"
-        kind: "*"
     clusterResourceWhitelist:
       - group: ""
         kind: Namespace
         name: "tailscale"
-  # - name: immich
-  #   description: Argo CD project for Immich
-  #   sourceRepos:
-  #     - https://github.com/MooseStack/kubernetes_k3s_cluster.git
-  #     - ghcr.io/immich-app/immich-charts
-  #   destinations:
-  #     - namespace: immich
-  #       server: https://kubernetes.default.svc
-  #   namespaceResourceWhitelist:
-  #     - group: "*"
-  #       kind: "*"
-  #   clusterResourceWhitelist:
-  #     - group: "*"
-  #       kind: "*"
+    namespaceResourceWhitelist:
+      - group: apps
+        kind: Deployment
+      - group: rbac.authorization.k8s.io
+        kind: Role
+      - group: rbac.authorization.k8s.io
+        kind: RoleBinding
+      - group: ""
+        kind: ServiceAccount
+      - group: ""
+        kind: Secret
+  - name: immich
+    description: Argo CD project for Immich
+    sourceRepos:
+      - https://github.com/MooseStack/kubernetes_k3s_cluster.git
+      - ghcr.io/immich-app/immich-charts
+    destinations:
+      - namespace: immich
+        server: https://kubernetes.default.svc
+    namespaceResourceWhitelist:
+      - group: apps
+        kind: Deployment
+      - group: ""
+        kind: Service
+      - group: networking.k8s.io
+        kind: Ingress
+      - group: ""
+        kind: PersistentVolumeClaim
+      - group: postgresql.cnpg.io
+        kind: Cluster
+      - group: postgresql.cnpg.io
+        kind: Database
 
 repositories:
   - name: repo-1406131573
@@ -86,13 +101,8 @@ repositories:
     project: tailscale
     url: https://github.com/MooseStack/tailscale_helm.git
 
-  # - name: cloudnativepg
-  #   project: gitops-infra
-  #   type: helm
-  #   url: https://cloudnative-pg.github.io/charts
-
-  # - name: immichcharts
-  #   project: immich
-  #   type: helm
-  #   enableOCI: true
-  #   url: ghcr.io/immich-app/immich-charts
+  - name: immichcharts
+    project: immich
+    type: helm
+    enableOCI: true
+    url: ghcr.io/immich-app/immich-charts
