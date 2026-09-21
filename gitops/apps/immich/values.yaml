@@ -1,0 +1,55 @@
+# Immich chart values managed by this repository.
+## Actual helm chart used: ghcr.io/immich-app/immich-charts/immich
+
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          tag: "v3.2.2"
+        env:
+          DB_HOSTNAME:
+            valueFrom:
+              secretKeyRef:
+                name: immich-database-app
+                key: host
+          DB_USERNAME:
+            valueFrom:
+              secretKeyRef:
+                name: immich-database-app
+                key: user
+          DB_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: immich-database-app
+                key: password
+          DB_DATABASE_NAME:
+            valueFrom:
+              secretKeyRef:
+                name: immich-database-app
+                key: dbname
+
+valkey:
+  enabled: true
+
+immich:
+  persistence:
+    library:
+      existingClaim: immich-library-pvc
+
+server:
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: selfsigned
+      hosts:
+        - host: immich.homelab
+          paths:
+            - path: /
+              service:
+                identifier: main
+      tls:
+        - secretName: immich-tls
+          hosts:
+            - immich.homelab

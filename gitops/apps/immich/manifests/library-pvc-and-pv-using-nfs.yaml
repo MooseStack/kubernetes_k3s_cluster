@@ -1,0 +1,30 @@
+# PV using NFS
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: immich-nfs
+spec:
+  capacity:
+    storage: 300Gi
+  nfs:
+    server: 172.16.0.9
+    path: /volume1/immich
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+
+---
+# PVC
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: immich-library
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 300Gi
+  volumeName: immich-nfs
+  volumeMode: Filesystem
