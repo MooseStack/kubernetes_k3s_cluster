@@ -1,0 +1,17 @@
+# Shared CloudNativePG operator settings.
+
+cloudnative-pg:
+  replicaCount: 1
+
+  crds:
+    create: true
+
+  config:
+    clusterWide: true
+    maxConcurrentReconciles: 10
+
+  rbac:
+    create: true
+
+  monitoring:
+    podMonitorEnabled: false

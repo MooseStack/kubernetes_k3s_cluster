@@ -12,8 +12,11 @@ stringData:
 {{ with .project }}
   project: {{ . }}
 {{ end }}
-  type: git
+  type: {{ default "git" .type }}
   url: {{ .url }}
+{{ with .enableOCI }}
+  enableOCI: "true"
+{{ end }}
 type: Opaque
 ---
 {{- end }}
