@@ -14,3 +14,16 @@ This Helm chart takes over the install from Ansible of ArgoCD, and manages the f
 
 The generated Argo CD application is intentionally named `argocd` so its Helm
 release and resource names remain compatible with the initial Ansible install.
+
+## Initial login credentials
+
+The initial Argo CD username is `admin`. Retrieve the generated initial
+password with:
+
+```sh
+echo "Username: admin"
+echo -n "Password: "
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 --decode
+echo
+```
