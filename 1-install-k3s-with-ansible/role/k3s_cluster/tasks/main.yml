@@ -1,0 +1,23 @@
+---
+- name: Configure firewalld
+  ansible.builtin.include_tasks: firewalld.yml
+  when: k3s_install_state | default('') | lower == 'install'
+
+- name: Install Helm
+  ansible.builtin.include_tasks: helm.yml
+  when:
+    - inventory_hostname == groups['server'][0]
+    - argocd_install_state | default('') | lower in ['install', 'remove']
+
+- name: Manage Argo CD
+  ansible.builtin.include_tasks: argocd.yml
+  when:
+    - inventory_hostname == groups['server'][0]
+    - argocd_install_state | default('') | lower in ['install', 'remove']
+
+- name: Bootstrap Argo CD
+  ansible.builtin.include_tasks: argo_bootstrap.yml
+  when:
+    - inventory_hostname == groups['server'][0]
+    - argo_bootstrap | default(false) | bool
+    - argocd_install_state | default('') | lower == 'install'

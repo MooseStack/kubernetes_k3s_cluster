@@ -1,0 +1,52 @@
+- name: Check whether Argo CD bootstrap resources are already deployed
+  ansible.builtin.command:
+    argv:
+      - kubectl
+      - --kubeconfig
+      - "{{ controller_kubeconfig }}"
+      - get
+      - applicationset
+      - gitops-infra-applicationset
+      - --namespace
+      - argocd
+  register: argo_bootstrap_status
+  changed_when: false
+  failed_when: false
+
+- name: Create temporary Argo CD bootstrap directory
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: argo-bootstrap-
+  register: argo_bootstrap_directory
+  when: argo_bootstrap_status.rc != 0
+
+- name: Bootstrap Argo CD resources
+  when: argo_bootstrap_status.rc != 0
+  block:
+    - name: Copy Argo CD bootstrap manifests to the server
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "{{ argo_bootstrap_directory.path }}/{{ item | basename }}"
+        mode: "0644"
+      loop: "{{ query('ansible.builtin.fileglob', playbook_dir + '/../../2-argo_bootstrap/*.yaml') }}"
+      loop_control:
+        label: "{{ item | basename }}"
+
+    - name: Apply Argo CD bootstrap manifests with kubectl
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - --kubeconfig
+          - "{{ controller_kubeconfig }}"
+          - apply
+          - --filename
+          - "{{ argo_bootstrap_directory.path }}"
+      register: argo_bootstrap_apply
+      changed_when: >-
+        'created' in argo_bootstrap_apply.stdout or
+        'configured' in argo_bootstrap_apply.stdout
+  always:
+    - name: Remove temporary Argo CD bootstrap directory
+      ansible.builtin.file:
+        path: "{{ argo_bootstrap_directory.path }}"
+        state: absent

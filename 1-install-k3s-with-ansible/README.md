@@ -16,8 +16,8 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
 
 2. Update the inventory (variables and hosts info): [1-install-k3s-with-ansible/inventory.yaml](inventory.yaml)
 
-   Run `playbooks/helm.yaml` first to install the pinned Helm CLI on the target
-   server before running the Argo CD playbook.
+   The main playbook installs or removes K3s, Helm, and Argo CD according to
+   the state variables below.
 
    - Hosts must be members of `k3s_cluster` in either `server` or `agent`.
 
@@ -54,22 +54,6 @@ cd 1-install-k3s-with-ansible
 ansible-playbook playbooks/main.yaml
 ```
 
-## Or individually:
-Install the Helm CLI:
-
-```sh
-ansible-playbook playbooks/helm.yaml
-```
-
-Install ArgoCD. Theres a check I put that will ensure it doesnt reinstall if its already installed. To avoid GitOps overwrite in future Ansible reruns.
-
-```sh
-ansible-playbook playbooks/argocd.yaml -e argocd_install_state=install
-```
-
-
-Apply the Argo CD bootstrap manifests, this enabled the GitOps approach to maintain ArgoCD upgrades and all future Kubernetes manifests via the [gitops](../gitops) folder:
-
-```sh
-ansible-playbook playbooks/argo-bootstrap.yaml -e argo_bootstrap=true
-```
+The local tasks are implemented by the `role/k3s_cluster` role and are
+executed by the main playbook in the correct order after the upstream K3s
+playbook.

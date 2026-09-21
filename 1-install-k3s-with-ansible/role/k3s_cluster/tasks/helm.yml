@@ -1,0 +1,58 @@
+---
+- name: Check installed Helm version
+  ansible.builtin.command:
+    cmd: "/usr/local/bin/helm version --template={{ '{{' }}.Version{{ '}}' }}"
+  register: installed_helm_version
+  changed_when: false
+  failed_when: false
+
+- name: Install requested Helm version
+  when: installed_helm_version.stdout | trim != helm_version
+  block:
+    - name: Gather facts required for Helm installation
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - architecture
+
+    - name: Validate Helm architecture
+      ansible.builtin.assert:
+        that:
+          - ansible_facts["architecture"] in helm_architectures
+        fail_msg: "Helm does not provide a Linux binary for {{ ansible_facts['architecture'] }}"
+
+    - name: Download Helm
+      ansible.builtin.get_url:
+        url: >-
+          https://get.helm.sh/helm-{{ helm_version }}-linux-{{
+            helm_architectures[ansible_facts["architecture"]]
+          }}.tar.gz
+        dest: "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}.tar.gz"
+        mode: "0644"
+
+    - name: Create Helm extraction directory
+      ansible.builtin.file:
+        path: "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}"
+        state: directory
+        mode: "0755"
+
+    - name: Unarchive Helm
+      ansible.builtin.unarchive:
+        src: "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}.tar.gz"
+        dest: "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}"
+        remote_src: true
+
+    - name: Install Helm executable
+      ansible.builtin.copy:
+        src: "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}/linux-{{ helm_architectures[ansible_facts['architecture']] }}/helm"
+        dest: "/usr/local/bin/helm"
+        remote_src: true
+        mode: "0755"
+
+    - name: Clean up temporary Helm files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}.tar.gz"
+        - "/tmp/helm-{{ helm_version }}-linux-{{ helm_architectures[ansible_facts['architecture']] }}"

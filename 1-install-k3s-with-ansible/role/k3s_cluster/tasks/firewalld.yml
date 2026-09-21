@@ -1,0 +1,16 @@
+---
+- name: Gather service facts for firewalld check
+  ansible.builtin.service_facts:
+
+- name: Open configured TCP ports when firewalld is running
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ firewalld_public_zone_ports_to_open }}"
+  when:
+    - ansible_facts.services['firewalld.service'] is defined
+    - ansible_facts.services['firewalld.service'].state == 'running'
+    - firewalld_public_zone_ports_to_open is defined

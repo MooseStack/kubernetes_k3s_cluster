@@ -1,11 +1,3 @@
-### 1- This is a partial wrapper playbook that imports the K3s collection playbooks for install, upgrade, and remove. 
-# You can define what to do in the inventory.yaml file with the k3s_install_state variable.
-
-### 2 - open firewalld public zone ports if firewalld is enabled on the hosts.
-# Tiy can define the ports to open in the inventory.yaml file with the firewalld_public_zone_ports_to_open variable.
-
-## 3 - install helm and argocd if set to install
-
 ---
 - name: Import the K3s collection install playbook. This will handle firewalls/selinux, install k3s, and configure the cluster.
   ansible.builtin.import_playbook: k3s.orchestration.site
@@ -19,20 +11,8 @@
   ansible.builtin.import_playbook: k3s.orchestration.reset
   when: "k3s_install_state | default('') | lower == 'remove'"
 
-- name: Import the firewalld playbook when k3s is installed
-  ansible.builtin.import_playbook: firewalld.yaml
-  when: "k3s_install_state | default('') | lower == 'install'"
-
-- name: Import the Helm installation playbook
-  ansible.builtin.import_playbook: helm.yaml
-  when: "argocd_install_state | default('') | lower in ['install', 'remove']"
-
-- name: Import the Argo CD playbook when Argo CD is being installed or removed
-  ansible.builtin.import_playbook: argocd.yaml
-  when: "argocd_install_state | default('') | lower in ['install', 'remove']"
-
-- name: Import the Argo CD bootstrap playbook when enabled
-  ansible.builtin.import_playbook: argo-bootstrap.yaml
-  when: 
-    - argo_bootstrap | default(false) | bool
-    - "argocd_install_state | default('') | lower in ['install']"
+- name: Run local cluster configuration role
+  hosts: k3s_cluster
+  become: true
+  roles:
+    - k3s_cluster
