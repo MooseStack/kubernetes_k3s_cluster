@@ -78,19 +78,13 @@ projects:
     destinations:
       - namespace: immich
         server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: ""
+        kind: Namespace
+        name: "immich"
     namespaceResourceWhitelist:
-      - group: apps
-        kind: Deployment
-      - group: ""
-        kind: Service
-      - group: networking.k8s.io
-        kind: Ingress
-      - group: ""
-        kind: PersistentVolumeClaim
-      - group: postgresql.cnpg.io
-        kind: Cluster
-      - group: postgresql.cnpg.io
-        kind: Database
+      - group: "*"
+        kind: "*"
 
 repositories:
   - name: repo-1406131573
