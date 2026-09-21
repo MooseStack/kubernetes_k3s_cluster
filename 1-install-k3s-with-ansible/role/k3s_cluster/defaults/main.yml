@@ -1,4 +1,15 @@
 ---
+# Leave the custom role actions disabled unless explicitly enabled by inventory.
+argocd_install_state: ""
+argo_bootstrap: false
+
+os_packages: []
+firewalld_public_zone_ports_to_open: []
+
+argocd_chart_version: "10.9.1"
+helm_version: "v3.22.0"
+controller_kubeconfig: /etc/rancher/k3s/k3s.yaml
+
 helm_architectures:
   x86_64: amd64
   aarch64: arm64

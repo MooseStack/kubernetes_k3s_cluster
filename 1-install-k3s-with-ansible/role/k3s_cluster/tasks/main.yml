@@ -1,4 +1,9 @@
 ---
+- name: Install configured OS packages
+  ansible.builtin.include_tasks: os_packages.yml
+  when:
+    - os_packages | default([]) | length > 0
+
 - name: Configure firewalld
   ansible.builtin.include_tasks: firewalld.yml
   when: k3s_install_state | default('') | lower == 'install'

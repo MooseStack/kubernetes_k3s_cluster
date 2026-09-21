@@ -30,6 +30,7 @@ removing a K3s cluster using the upstream collection: [k3s-ansible](https://gith
    | `argocd_chart_version` | `10.9.1` | Argo CD Helm chart version to install or upgrade to. |
    | `helm_version` | `v3.17.3` | Helm CLI version to install on the cluster server before the Argo CD playbook runs. |
    | `controller_kubeconfig` | `/etc/rancher/k3s/k3s.yaml` | Target Kubeconfig used to install ArgoCD |
+   | `os_packages` | `nfs-utils` | List of operating system packages to install on all cluster hosts. Leave empty or omit to skip package installation. |
    | `firewalld_public_zone_ports_to_open` | `6443/tcp`, `443/tcp` | Open ports to public zone if using firewalld |
    | `server.hosts` | `172.16.0.20` | The K3s server node for this cluster. |
    | `agent.hosts` | empty (`{}`) | Single-node cluster, so no agent hosts are configured. |

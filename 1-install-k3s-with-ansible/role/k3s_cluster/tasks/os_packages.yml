@@ -1,0 +1,5 @@
+---
+- name: Install OS packages
+  ansible.builtin.package:
+    name: "{{ os_packages }}"
+    state: present
