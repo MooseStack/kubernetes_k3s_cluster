@@ -1,5 +1,4 @@
 namespace: default
 
 resources:
-  # # Setting a default storage class
-  # - default-storageclass.yaml
+  traefik-helmchartconfig.yaml
