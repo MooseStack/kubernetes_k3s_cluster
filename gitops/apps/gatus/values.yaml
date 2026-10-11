@@ -38,6 +38,8 @@ config:
 
     - name: Headlamp
       url: https://headlamp.homelab
+      client:
+        insecure: true
       conditions:
         - '[STATUS] == 200'
       alerts:
