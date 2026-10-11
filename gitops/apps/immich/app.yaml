@@ -9,7 +9,7 @@ sources:
   # Deploy Immich Helm Chart with my custom values file
   - repoURL: ghcr.io/immich-app/immich-charts
     chart: immich
-    targetRevision: 0.13.2
+    targetRevision: 0.13.4
     helm:
       valueFiles:
         - $values/gitops/apps/immich/values.yaml
