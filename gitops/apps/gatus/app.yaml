@@ -24,3 +24,9 @@ ignoreDifferences:
     jsonPointers:
       - /data
       - /stringData
+  - group: ""
+    kind: Secret
+    name: notifysh-secret
+    jsonPointers:
+      - /data
+      - /stringData
