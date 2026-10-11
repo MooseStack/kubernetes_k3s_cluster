@@ -1,6 +1,10 @@
 persistence:
   enabled: true
 
+envFrom:
+  - secretRef:
+      name: smtp-secret
+
 ingress:
   enabled: true
   annotations:
@@ -13,6 +17,15 @@ ingress:
         - gatus.homelab
 
 config:
+  alerting:
+    email:
+      to: ${SMTP_TO}
+      from: ${SMTP_FROM}
+      username: ${SMTP_USERNAME}
+      password: ${SMTP_PASSWORD}
+      host: ${SMTP_HOST}
+      port: ${SMTP_PORT}
+
   storage:
     type: sqlite
     path: /data/data.db
@@ -22,3 +35,12 @@ config:
       url: https://example.com
       conditions:
         - '[STATUS] == 200'
+
+    - name: Headlamp
+      url: https://headlamp.homelab
+      conditions:
+        - '[STATUS] == 200'
+      alerts:
+        - type: email
+          description: "Headlamp is unavailable"
+          failure-threshold: 3
