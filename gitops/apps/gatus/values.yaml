@@ -17,6 +17,10 @@ ingress:
         - gatus.homelab
 
 config:
+  storage:
+    type: sqlite
+    path: /data/data.db
+    
   alerting:
     email:
       to: ${SMTP_TO}
@@ -25,16 +29,14 @@ config:
       password: ${SMTP_PASSWORD}
       host: ${SMTP_HOST}
       port: ${SMTP_PORT}
-
-  storage:
-    type: sqlite
-    path: /data/data.db
+      default-alert:
+        enabled: true
+        failure-threshold: 3
+        success-threshold: 2
+        send-on-resolved: true
+        description: "Health check failed"
     
   endpoints:
-    - name: Example
-      url: https://example.com
-      conditions:
-        - '[STATUS] == 200'
 
     - name: Headlamp
       url: https://headlamp.homelab
@@ -44,5 +46,13 @@ config:
         - '[STATUS] == 200'
       alerts:
         - type: email
-          description: "Headlamp is unavailable"
-          failure-threshold: 3
+
+
+    - name: Immich
+      url: https://immich.homelab
+      client:
+        insecure: true
+      conditions:
+        - '[STATUS] == 200'
+      alerts:
+        - type: email
