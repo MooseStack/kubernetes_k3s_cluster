@@ -35,24 +35,25 @@ config:
         success-threshold: 2
         send-on-resolved: true
         description: "Health check failed"
-    
-  endpoints:
+  
+  ## YAML Anchor for defaults to be passed down to each endpoint
+  default-endpoint: &endpoint-defaults
+    interval: 5m
+    client:
+      insecure: true
+    alerts:
+      - type: email
 
+  endpoints:
     - name: Headlamp
+      <<: *endpoint-defaults
       url: https://headlamp.homelab
-      client:
-        insecure: true
       conditions:
         - '[STATUS] == 200'
-      alerts:
-        - type: email
 
 
     - name: Immich
+      <<: *endpoint-defaults
       url: https://immich.homelab
-      client:
-        insecure: true
       conditions:
         - '[STATUS] == 200'
-      alerts:
-        - type: email
