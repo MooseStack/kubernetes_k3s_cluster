@@ -1,6 +1,17 @@
 persistence:
   enabled: true
 
+ingress:
+  enabled: true
+  annotations:
+    cert-manager.io/cluster-issuer: selfsigned
+  hosts:
+    - gatus.homelab
+  tls:
+    - secretName: gatus-tls
+      hosts:
+        - gatus.homelab
+
 config:
   storage:
     type: sqlite
