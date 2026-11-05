@@ -7,7 +7,7 @@ sources:
     path: gitops/apps/immich/manifests
 
   # Deploy Immich Helm Chart with my custom values file
-  - repoURL: ghcr.io/immich-app/immich-charts
+  - repoURL: ghcr.io/immich-app/immich-charts #https://github.com/immich-app/immich-charts
     chart: immich
     targetRevision: 0.13.4
     helm:
