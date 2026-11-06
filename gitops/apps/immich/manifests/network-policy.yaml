@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: egress-policy
+  name: egress-allpods-only-within-namespace-and-dns
 spec:
   podSelector: {} #all pods
   policyTypes:
@@ -23,12 +23,11 @@ spec:
           port: 53
 ---
 
-# Allow the CloudNativePG cluster HTTPS egress to API service in default namespace.
-# K3s doesnt have an API Server pod, it has just a k8s service with systemd process.
+# Allow the CloudNativePG cluster HTTPS egress to the API server
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: immich-database-default-https-egress
+  name: egress-database-to-apiserver
 spec:
   podSelector:
     matchLabels:
@@ -37,9 +36,8 @@ spec:
     - Egress
   egress:
     - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: default
+        - ipBlock:
+            cidr: 10.43.0.1/32 # k3s reserves this ip for the API server, which is not in any namespace (systemd service)
       ports:
         - protocol: TCP
           port: 443
