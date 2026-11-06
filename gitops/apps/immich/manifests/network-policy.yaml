@@ -37,7 +37,14 @@ spec:
   egress:
     - to:
         - ipBlock:
-            cidr: 10.43.0.1/32 # k3s reserves this ip for the API server, which is not in any namespace (systemd service)
+            cidr: 10.43.0.1/32 # kubernetes Service ClusterIP in the default namespace
       ports:
         - protocol: TCP
           port: 443
+    # Allow the backend after Service destination NAT (actual worker node IP)
+    - to:
+        - ipBlock:
+            cidr: 172.16.0.20/32
+      ports:
+        - protocol: TCP
+          port: 6443
