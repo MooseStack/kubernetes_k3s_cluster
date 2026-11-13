@@ -1,0 +1,2 @@
+volsync:
+  manageCRDs: true

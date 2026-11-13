@@ -9,3 +9,5 @@ managed with Helm, Kustomize, or plain Kubernetes manifests.
   [Headlamp Helm chart](https://headlamp.dev/).
 - [cloudnative-pg](cloudnative-pg): PostgreSQL operator from the upstream
   [CloudNativePG Helm chart](https://cloudnative-pg.io/).
+- [volsync](volsync): persistent volume replication and backup from the upstream
+  [VolSync Helm chart](https://volsync.readthedocs.io/).

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: volsync
+description: Install the VolSync operator for persistent volume replication and backup
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: volsync
+    version: 0.17.0
+    repository: https://backube.github.io/helm-charts/
