@@ -1,17 +1,48 @@
 # kubernetes_k3s_cluster
 
-Installation and configuration of k3s, Helm, and ArgoCD using Ansible and GitOps.
+Installation and configuration of K3s, Helm, and Argo CD using Ansible and GitOps.
 
 ## Requirements
-- `x86-64` or `ARM`/`aarch64` architectures
-- Tested Operating Systems: Fedora/RHEL family distros (AlmaLinux, Rocky, Oracle Linux, CentOS Stream, etc.). Although, should work on Debian/Ubuntu family distros as well, just havent tested there yet.
-- `ansible`, can install using `pip3 install --user ansible`
 
-## Install and configuration using Ansible
+- x86-64 or ARM/aarch64 hosts.
+- Fedora/RHEL-family Linux is tested. Debian/Ubuntu may work but has not been tested.
+- Ansible on the control machine (`pip3 install --user ansible`).
+- Passwordless SSH and sudo access to the cluster hosts.
 
-- [1-install-k3s-with-ansible/README.md](1-install-k3s-with-ansible/README.md)
-  - Inventory and variables: [inventory.yaml](1-install-k3s-with-ansible/inventory.yaml)
-    - if `argo_bootstrap: true`, it will:
-       - Create the gitops-infra related manifests and applicationSet defined in: [2-argo_bootstrap](2-argo_bootstrap)
-       - GitOps will be enabled, with ArgoCD syncing with the [gitops](gitops) folder
-       - ArgoCD will manage itself via GitOps by taking ownership of the initial boostrap via [Chart.yaml](gitops/infra/argocd/Chart.yaml) & [values.yaml](gitops/infra/argocd/values.yaml). Reference: [README.md](gitops/infra/argocd/README.md)
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Ansible["Ansible control machine"]
+  Bootstrap["Bootstrap manifests"]
+  GitOps["gitops/"]
+
+  subgraph BoxX["Linux box X"]
+    direction LR
+    Host["Host setup: OS packages, firewall, Helm"]
+    subgraph Cluster["K3s cluster"]
+      direction LR
+      K3s["K3s server"]
+      Argo["Argo CD"]
+      Argo --> Managed["Infrastructure and applications"]
+    end
+  end
+
+  Ansible -->|provisions and configures| BoxX
+  Ansible -->|applies| Bootstrap
+  Bootstrap -->|initial resources| Argo
+  GitOps -->|desired state| Argo
+```
+
+## Ansible setup
+
+The [README.md](1-install-k3s-with-ansible/README.md) in the Ansible directory
+covers inventory settings and the install, upgrade, and removal commands.
+
+## GitOps
+
+During installation, `argo_bootstrap: true` applies the initial resources in
+[2-argo_bootstrap/](2-argo_bootstrap/). Argo CD then syncs the applications and
+infrastructure in [gitops/](gitops/) and manages its own configuration. See its
+[README.md](gitops/infra/argocd/README.md) for details.

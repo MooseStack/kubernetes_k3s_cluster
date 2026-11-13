@@ -1,0 +1,8 @@
+---
+# Pass this file with -e @vars/upgrade.yaml for a K3s-only upgrade.
+## Example:
+# cd 1-install-k3s-with-ansible
+# ansible-playbook playbooks/main.yaml -e @vars/upgrade.yaml
+#
+k3s_install_state: upgrade
+k3s_version: v1.37.2+k3s1 # Set the target release before running.
